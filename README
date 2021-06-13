@@ -1,0 +1,18 @@
+OMIC EVALUATOR
+==============
+
+GIVEN ANY SOURCE CODE IT WILL COMPILE IT ANC CHECK EACH TEST IN THE
+/TESTS DIRECTORY AND GIVE A SCORE BASED ON HOW SIMMILAR THE OUTPUT IS
+TO THE OUTPUT IN /TESTS
+THE FOLLOWING PROGRAMMING LANGUAGES AND COMPILE OPTIONS ARE:
+    +--------+------------------------------+
+    ! LANG.  ! COMPILE OPTIONS              !
+    +--------+------------------------------+
+    ! C      ! gcc -Wall -O2 -std=c11 ...   !
+    ! C++    ! g++ -Wall -O2 -std=c++14 ... !
+    ! PASCAL ! fpc -O2 -Xs ...              !
+    ! PYTHON ! python3 ...                  !
+    ! RUST   ! rustc -O ...                 !
+    +--------+------------------------------+
+USAGE:
+  omic-eval [option] [queue_d] [username] [problem-name] [time-limit] [memory-limit] [prog-lang] [env-dir] [tests-dir]
