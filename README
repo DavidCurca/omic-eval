@@ -16,3 +16,21 @@ THE FOLLOWING PROGRAMMING LANGUAGES AND COMPILE OPTIONS ARE:
     +--------+------------------------------+
 USAGE:
   omic-eval [option] [queue_d] [username] [problem-name] [time-limit] [memory-limit] [prog-lang] [env-dir] [tests-dir]
+  -[option]: -verbose: show debug messages
+             -quiet: no logging to the console
+             -help: shows documentation and manual
+  -[queue_id]: a 16 string that consists of upper/lower case letters. This argument is used by the OMIC-PLATFORM
+  -[problem-source]: path to the code that is going to be compiled
+  -[probleam-name]: name of the problem that is going to be evaluated.
+  -[time-limit]: how much time each test should last
+  -[memory-limit]: how much memory each test should use
+  -[prog-lang]: what the code is going to be compiled in. the valid values for this argument are:
+                 * cpp / c++
+                 * c
+                 * python / py
+                 * rust
+  -[env-dir]: the directory where the program will run
+  -[tests-dir]: the directory in which the tests are kept. 
+                NOTE: the path to the tests is [tests-dir]/[problem-name]
+EXAMPLE:
+  omic-eval jSDFy%IbySsa6fd8 divad adunare.cpp Adunare 100 65536 cpp env/ tests/
