@@ -34,4 +34,4 @@ USAGE:
                 NOTE: the path to the tests is [tests-dir]/[problem-name]
 EXAMPLE:
   omic-eval jSDFy%IbySsa6fd8 divad adunare.cpp Adunare 100 65536 cpp env/ tests/
-YOU CAN SEE HOW THE PROGRAM RUNS [HERE](ttps://github.com/DavidCurca/omic-eval/blob/main/screenshot.png)
+YOU CAN SEE HOW THE PROGRAM RUNS [HERE](https://github.com/DavidCurca/omic-eval/blob/main/screenshot.png)
