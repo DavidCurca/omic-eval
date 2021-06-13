@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
+#include <ctime>
 #include <cstring>
 #include <fstream>
 #include <sstream>
@@ -61,7 +62,7 @@ typedef std::chrono::high_resolution_clock Clock;
 /// tests is the tests dir
 /// (COLOR SCHEME INSPIRED BY OPENRC)
 
-const string red("\033[0;31m");
+const string red("\033[1;31m");
 const string blue("\033[1;34m");
 const string green("\033[1;32m");
 const string yellow("\033[1;33m");
@@ -114,8 +115,18 @@ string correctName(string filename){
   return ans;
 }
 
-string getDimension(){
+char * getTime(){
+  auto end = chrono::system_clock::now();
+  time_t end_time = chrono::system_clock::to_time_t(end);
+  return ctime(&end_time);
+}
+
+string getDimension(string filename){
   string ans = "";
+  ifstream f(filename, ios::binary);
+  f.seekg(0, ios::end);
+  int size = f.tellg();
+  ans = to_string(size) + " B";
   return ans;
 }
 
@@ -129,10 +140,18 @@ int getMemory(){
   return atoi(ans.c_str());
 }
 
+string checkTest(int index, int time, int mem){
+  string ans = "Correct Answer";
+
+  return ans;
+}
+
 void checkTests(string envdir, string testdir){
   /// TODO: punctaje diferite pentru anumite teste speciala
   ///       maxim 10 secunde pentru fiecare test
-  ///       printare adevarata
+  ///       printare adevarata si rezultatul primar intru fisier
+  ///	    directory clean up dupa ce termina testele
+  ///       fisier cu teste determinat de argumente
 
   string testPaths[200] = {};
   int numberP = 0, finalScore = 0;
@@ -156,11 +175,17 @@ void checkTests(string envdir, string testdir){
     auto endTime = Clock::now();
     system("cd env/ ; cat time-output.txt | grep Maximum > final-output.txt ; cd ..");
     auto time = chrono::duration_cast<chrono::milliseconds>(endTime-startTime).count();
-    cout << blue << "[" << green << " OK " << blue << "]" << reset << " --- Test Case #" << i << " : Correct Answer\n";
+    int mem = getMemory();
+    string testResult = checkTest(i, time, mem);
+    if(testResult.compare("Correct Answer") == 0){
+      cout << blue << "[" << green << " OK " << blue << "]" << reset << " --- Test Case #" << i << "   : " << green << testResult << reset << "\n";
+    }else{
+      cout << blue << "[" << red   << " !! " << blue << "]" << reset << " --- Test Case #" << i << " : " << red   << testResult << reset << "\n";
+    }
 
 
     cout << yellow << " >>>> " << reset << " --- Execution Time : " << blue << time << " ms" << reset << "\n";
-    cout << yellow << " >>>> " << reset << " --- Memory Used    : " << blue << getMemory() << " kbytes" << reset << "\n";
+    cout << yellow << " >>>> " << reset << " --- Memory Used    : " << blue << mem << " kbytes" << reset << "\n";
     correctAnswers++;
     finalScore += 100/(numberP/2);
   }
@@ -189,9 +214,9 @@ int main(int argc, char *argv[]){
     progAll = "Rust";
   }
   cout << blue << "[" << green << " OK " << blue << "]" << reset << " --- Starting " << cyan << "OMIC EVALUATOR " << reset << "\n";
-  cout << yellow << " >>>> " << reset << " --- Queue Id : " << blue << " [ insert argv here ]" << reset << "\n";
-  cout << yellow << " >>>> " << reset << " --- File Dimension : " << blue << "673 B" << reset << "\n";
-  cout << yellow << " >>>> " << reset << " --- Date Request Sent : " << blue << "Sat Jun 12 11:14:26 PM" << reset << "\n";
+  cout << yellow << " >>>> " << reset << " --- Queue Id : " << blue << argv[1] << reset << "\n";
+  cout << yellow << " >>>> " << reset << " --- File Dimension : " << blue << getDimension(argv[3]) << reset << "\n";
+  cout << yellow << " >>>> " << reset << " --- Date Request Sent : " << blue << getTime() << reset;
   cout << yellow << " >>>> " << reset << " --- Compiling " << argv[3] << " In " << progAll << "\n";
   compile(progAll, argv[3]);
   checkErrors();
