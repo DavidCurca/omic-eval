@@ -1,1 +1,1 @@
-	Maximum resident set size (kbytes): 3276
+	Maximum resident set size (kbytes): 3036

@@ -13,54 +13,7 @@
 using namespace std;
 namespace fs = std::filesystem;
 typedef std::chrono::high_resolution_clock Clock;
-
-/// OMIC-EVAL WIRTTEN BY DAVID CURCA
-/// JUNE 2021
-/// GIVEN ANY SOURCE CODE IT WILL COMPILE IT
-/// AND CHECK EACH TEST IN THE /TEST DIR
-/// AND GIVE A SPECIFIC SCORE DEPENDING ON THE
-/// OUTPUT IN EACH TEST
-/// THE FOLLOWING PROGRAMMING LANGUAGES AND
-/// COMPILE OPTIONS ARE:
-/// +--------+--------------------------------+
-/// ! LANG.  ! COMPILE OPTIONS                !
-/// +--------+--------------------------------+
-/// ! C      ! gcc -Wall -O2 -std=c11 ...     !
-/// ! C++    ! g++ -Wall -O2 -std=c++14 ...   !
-/// ! PASCAL ! fpc -O2 -Xs ..                 !
-/// ! JAVA   ! ... not suported yet ...       !
-/// ! PYTHON ! python3 ...                    !
-/// ! RUST   ! rustc -O ...                   !
-/// +--------+--------------------------------+
-/// EXAMPLE ARGUMENTS FOR OMIC-EVAL
-/// NOTE: THE /env IS THE DIR IN WHICH THE PROGRAM
-/// WILL BE RUNNING
-///       THE LONGEST TIME EACH TEST IS GOING TO LAST
-/// IS 5 SECONDS, AFTER THAT THE PROGRAM WILL BE KILLED
-/// USAGE:
-///   omic-eval [option] [queue_id] [usaname] [problem-source] [problem-name] [time-limit] [memeory-limit] [prog-lang] [env-dir] [tests-dir]
-///   -[option]: -verbose: show debug messages
-///              -quiet: not logging to the console
-///              -help: shows documentation and manual
-///   -[queue_id]: a 16 string of upper/lower case letters and digits used by the omic
-///                platform
-///   -[username]: username of the person who submitted the request
-///   -[problem-source]: path to the code that is going to be compiled and tested
-///   -[problem-name]: name of the problem that is evaluated
-///   -[time-limit]: how much time each test is going to take (EXPRESSED IN MILLISECONDS)
-///   -[memory-limit]: how much kilebytes each test is going to take
-///   -[prog-lang]: what the code is being compiled in. the prog-lang value can be:
-///                  * cpp or c++
-///                  * c
-///                  * python or py
-///                  * rust
-///   -[env-dir]: the directory where the program will be runed and tested
-///   -[tests-dir]: the directory where all of the tests of the problem are
-/// EXAMPLE:
-///   omic-eval kSDFy5IbySsa6fd8 divad adunare.cpp Adunare 100 65536 cpp env tests
-/// User divad sent the request kSDFy5IbySsa6fd8 on the problem "Adunare" in c++ and the
-/// tests is the tests dir
-/// (COLOR SCHEME INSPIRED BY OPENRC)
+int globalMem,globalTime;
 
 const string red("\033[1;31m");
 const string blue("\033[1;34m");
@@ -69,6 +22,13 @@ const string yellow("\033[1;33m");
 const string cyan("\033[0;36m");
 const string magenta("\033[0;35m");
 const string reset("\033[0m");
+
+/// TODO:
+///   - make 2 second time out
+///   - check mem and time boundaries
+///   - give compact final result
+///   - clear any taces after
+///   - python support
 
 void compile(string lang, string filename){
   string execute = "";
@@ -140,21 +100,53 @@ int getMemory(){
   return atoi(ans.c_str());
 }
 
+bool isEmpty(string str){
+  return str.find_first_not_of("\t\n ") == string::npos;
+}
+
+string strip(string str){
+  if(isEmpty(str)){
+    return "";
+  }
+  string ans = str.substr(str.find_first_not_of(' '), str.find_last_not_of(' ')+1);
+  ans = ans.substr(0, ans.find_last_not_of(' ')+1);
+  return ans;
+}
+
 string checkTest(int index, int time, int mem){
   string ans = "Correct Answer";
-
+  ifstream fTest("env/adunare.out");
+  ifstream fCorrect("tests/adunare-" + to_string(index) + ".out");
+  /// citeste fiecare linie dupa ce ii da strip si apoi verifica
+  /// daca sunt egaleASAsa
+  /// couaS
+  bool ok = true;
+  while(!fTest.eof() && !fCorrect.eof()){
+   string str1 = "", str2 = "";
+   getline(fTest, str1); str1 = strip(str1);
+   getline(fCorrect, str2); str2 = strip(str2);
+   if(!(str1.compare(str2) == 0)){
+      ok = false;
+      break;
+    }
+  }
+  if(fTest.eof() && fCorrect.eof()){
+    /// reached end of both filesSAS
+    if(ok){
+       ans = "Correct.";
+    }else{
+       ans = "Incorrect.";
+    }
+  }else{
+    ans = "Incorrect.";
+  }
   return ans;
 }
 
 void checkTests(string envdir, string testdir){
-  /// TODO: punctaje diferite pentru anumite teste speciala
-  ///       maxim 10 secunde pentru fiecare test
-  ///       printare adevarata si rezultatul primar intru fisier
-  ///	    directory clean up dupa ce termina testele
-  ///       fisier cu teste determinat de argumente
-
   string testPaths[200] = {};
-  int numberP = 0, finalScore = 0;
+  int numberP = 0;
+  double finalScore = 0;
   for(const auto & entry: fs::directory_iterator(testdir)){
     testPaths[++numberP] = entry.path();
   }
@@ -168,7 +160,9 @@ void checkTests(string envdir, string testdir){
     command_string = "mv env/" + stripString(fisier) + " env/" + correctName(fisier);
     //cout << command_string << "\n";
     system(command_string.c_str());
-
+    //system("cat env/adunare.in");
+    //system("cd env/ ; ./output ; cd ..");
+    //system("cat env/adunare.out");
 
     auto startTime = Clock::now();
     system("cd env/ ; /usr/bin/time -v ./output 2> time-output.txt ; cd ..");
@@ -177,17 +171,17 @@ void checkTests(string envdir, string testdir){
     auto time = chrono::duration_cast<chrono::milliseconds>(endTime-startTime).count();
     int mem = getMemory();
     string testResult = checkTest(i, time, mem);
-    if(testResult.compare("Correct Answer") == 0){
-      cout << blue << "[" << green << " OK " << blue << "]" << reset << " --- Test Case #" << i << "   : " << green << testResult << reset << "\n";
+    if(testResult.compare("Correct.") == 0){
+      cout << blue << "[" << green << " OK " << blue << "]" << reset << " --- Test Case #" << i << "   : " << green << "Correct." << reset << "\n";
+      correctAnswers++;
+      finalScore += 100/(numberP/2);
     }else{
-      cout << blue << "[" << red   << " !! " << blue << "]" << reset << " --- Test Case #" << i << " : " << red   << testResult << reset << "\n";
+      cout << blue << "[" << red   << " !! " << blue << "]" << reset << " --- Test Case #" << i << "   : " << red   << testResult << reset << "\n";
     }
 
 
     cout << yellow << " >>>> " << reset << " --- Execution Time : " << blue << time << " ms" << reset << "\n";
     cout << yellow << " >>>> " << reset << " --- Memory Used    : " << blue << mem << " kbytes" << reset << "\n";
-    correctAnswers++;
-    finalScore += 100/(numberP/2);
   }
   if(correctAnswers == numberP/2){
     finalScore += 100-finalScore;
@@ -199,6 +193,7 @@ void checkTests(string envdir, string testdir){
   else{colorScore = green;}
   cout << yellow << " >>>> " << reset << " --- Final Score: " << colorScore << finalScore << reset << "\n";
 }
+
 
 int main(int argc, char *argv[]){
   string progAll = "";
@@ -213,8 +208,10 @@ int main(int argc, char *argv[]){
   }else if(string(argv[7]).compare("rust") == 0){
     progAll = "Rust";
   }
-  cout << blue << "[" << green << " OK " << blue << "]" << reset << " --- Starting " << cyan << "OMIC EVALUATOR " << reset << "\n";
+  cout << blue << "[" << green << " OK " << blue << "]" << reset << " --- Starting " << reset << "OMIC EVALUATOR " << reset << "\n";
   cout << yellow << " >>>> " << reset << " --- Queue Id : " << blue << argv[1] << reset << "\n";
+  cout << yellow << " >>>> " << reset << " --- User In Question : " << blue << argv[2] << reset << "\n";
+  cout << yellow << " >>>> " << reset << " --- Problem Name : " << blue << argv[4] << reset << "\n";
   cout << yellow << " >>>> " << reset << " --- File Dimension : " << blue << getDimension(argv[3]) << reset << "\n";
   cout << yellow << " >>>> " << reset << " --- Date Request Sent : " << blue << getTime() << reset;
   cout << yellow << " >>>> " << reset << " --- Compiling " << argv[3] << " In " << progAll << "\n";
