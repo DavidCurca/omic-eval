@@ -1,0 +1,30 @@
+[1;34m[[1;32m OK [1;34m][0m --- Starting [0mOMIC EVALUATOR [0m
+[1;33m >>>> [0m --- Queue Id : [1;34mTIFikadlii7d9abl[0m
+[1;33m >>>> [0m --- User In Question : [1;34mdivad[0m
+[1;33m >>>> [0m --- Problem Name : [1;34mAdunare[0m
+[1;33m >>>> [0m --- File Dimension : [1;34m679 B[0m
+[1;33m >>>> [0m --- Date Request Sent : [1;34mSat Jun 19 20:52:03 2021
+[0m[1;33m >>>> [0m --- Compiling calculcombinari.cpp In C++
+[1;34m[[1;32m OK [1;34m][0m --- Compiled Successfully
+[1;34m[[1;31m !! [1;34m][0m --- Test Case #1   : [1;31mIncorrect.[0m
+[1;33m >>>> [0m --- Execution Time : [1;34m7 ms[0m
+[1;33m >>>> [0m --- Memory Used    : [1;34m3092 kbytes[0m
+[1;34m[[1;31m !! [1;34m][0m --- Test Case #2   : [1;31mIncorrect.[0m
+[1;33m >>>> [0m --- Execution Time : [1;34m6 ms[0m
+[1;33m >>>> [0m --- Memory Used    : [1;34m3188 kbytes[0m
+[1;34m[[1;31m !! [1;34m][0m --- Test Case #3   : [1;31mIncorrect.[0m
+[1;33m >>>> [0m --- Execution Time : [1;34m6 ms[0m
+[1;33m >>>> [0m --- Memory Used    : [1;34m3132 kbytes[0m
+[1;34m[[1;31m !! [1;34m][0m --- Test Case #4   : [1;31mIncorrect.[0m
+[1;33m >>>> [0m --- Execution Time : [1;34m6 ms[0m
+[1;33m >>>> [0m --- Memory Used    : [1;34m3028 kbytes[0m
+[1;34m[[1;31m !! [1;34m][0m --- Test Case #5   : [1;31mIncorrect.[0m
+[1;33m >>>> [0m --- Execution Time : [1;34m6 ms[0m
+[1;33m >>>> [0m --- Memory Used    : [1;34m3136 kbytes[0m
+[1;34m[[1;31m !! [1;34m][0m --- Test Case #6   : [1;31mIncorrect.[0m
+[1;33m >>>> [0m --- Execution Time : [1;34m7 ms[0m
+[1;33m >>>> [0m --- Memory Used    : [1;34m3132 kbytes[0m
+[1;34m[[1;31m !! [1;34m][0m --- Test Case #7   : [1;31mIncorrect.[0m
+[1;33m >>>> [0m --- Execution Time : [1;34m7 ms[0m
+[1;33m >>>> [0m --- Memory Used    : [1;34m3136 kbytes[0m
+[1;33m >>>> [0m --- Final Score: [1;31m0[0m

@@ -14,9 +14,6 @@ using namespace std;
 namespace fs = std::filesystem;
 typedef std::chrono::high_resolution_clock Clock;
 int globalMem,globalTime;
-string queueId = "",problemName = "",preposition = "",arg_test = "";
-
-ofstream fout;
 
 const string red("\033[1;31m");
 const string blue("\033[1;34m");
@@ -29,11 +26,10 @@ const string reset("\033[0m");
 /// TODO:
 ///   - make 2 secondl time out       [DONE]
 ///   - check mem and time boundaries [DONE]
-///   - index tests dir               [DONE]
-///   - give compact final result     [DONE]
+///   - index tests dir
+///   - give compact final result
 ///   - clear any taces after         [DONE]
-///   - delete env-dir argument       [DONE]
-///   - make code run safely
+///   - python support
 
 void compile(string lang, string filename){
   string execute = "";
@@ -58,16 +54,15 @@ void checkErrors(){
   string str = strStream.str();
   if(str.find("error") != string::npos || str.find("Error") != string::npos){
     /// found an error
-    fout << blue << "[" << red << " ERR " << blue << "]" << reset << " --- Compilation Error: \n" << str;
-    fout << "omic-eval: exit status 1\n";
-    fout.close();
+    cout << blue << "[" << red << " ERR " << blue << "]" << reset << " --- Compilation Error: \n" << str;
+    cout << "omic-eval: exit status 1\n";
     exit(1);
   }
-  fout << blue <<  "[" << green << " OK " << blue << "]" << reset << " --- Compiled Successfully\n";
+  cout << blue <<  "[" << green << " OK " << blue << "]" << reset << " --- Compiled Successfully\n";
 }
 
 string stripString(string str){
-  return str.substr(str.find_last_of("/")+1, str.length()-str.find_last_of("/"));
+  return str.substr(str.find("/")+1, str.length()-str.find("/"));
 }
 
 string correctName(string filename){
@@ -121,8 +116,8 @@ string strip(string str){
 
 string checkTest(int index, int time, int mem){
   string ans = "Correct Answer";
-  ifstream fTest(((string)("env/" + preposition + ".out")).c_str());
-  ifstream fCorrect(((string)("tests/" + problemName + "/" + preposition + "-" + to_string(index) + ".out")).c_str());
+  ifstream fTest("env/adunare.out");
+  ifstream fCorrect("tests/adunare-" + to_string(index) + ".out");
   /// citeste fiecare linie dupa ce ii da strip si apoi verifica
   /// daca sunt egaleASAsa
   /// couaS
@@ -154,7 +149,7 @@ string checkTest(int index, int time, int mem){
   return ans;
 }
 
-void checkTests(string testdir){
+void checkTests(string envdir, string testdir){
   string testPaths[200] = {};
   int numberP = 0;
   double finalScore = 0;
@@ -168,8 +163,7 @@ void checkTests(string testdir){
     string fisier = testPaths[i*2-1];
     string command_string = "cp " + fisier + " env/";
     system(command_string.c_str());
-    //cout << correctName(fisier) << "\n";
-    command_string = "mv env/" + stripString(fisier) + " env/" + preposition + ".in";
+    command_string = "mv env/" + stripString(fisier) + " env/" + correctName(fisier);
     //cout << command_string << "\n";
     system(command_string.c_str());
     //system("cat env/adunare.in");
@@ -184,16 +178,16 @@ void checkTests(string testdir){
     int mem = getMemory();
     string testResult = checkTest(i, time, mem);
     if(testResult.compare("Correct.") == 0){
-      fout << blue << "[" << green << " OK " << blue << "]" << reset << " --- Test Case #" << i << "   : " << green << "Correct." << reset << "\n";
+      cout << blue << "[" << green << " OK " << blue << "]" << reset << " --- Test Case #" << i << "   : " << green << "Correct." << reset << "\n";
       correctAnswers++;
       finalScore += 100/(numberP/2);
     }else{
-      fout << blue << "[" << red   << " !! " << blue << "]" << reset << " --- Test Case #" << i << "   : " << red   << testResult << reset << "\n";
+      cout << blue << "[" << red   << " !! " << blue << "]" << reset << " --- Test Case #" << i << "   : " << red   << testResult << reset << "\n";
     }
 
 
-    fout << yellow << " >>>> " << reset << " --- Execution Time : " << blue << time << " ms" << reset << "\n";
-    fout << yellow << " >>>> " << reset << " --- Memory Used    : " << blue << mem << " kbytes" << reset << "\n";
+    cout << yellow << " >>>> " << reset << " --- Execution Time : " << blue << time << " ms" << reset << "\n";
+    cout << yellow << " >>>> " << reset << " --- Memory Used    : " << blue << mem << " kbytes" << reset << "\n";
   }
   if(correctAnswers == numberP/2){
     finalScore += 100-finalScore;
@@ -203,20 +197,11 @@ void checkTests(string testdir){
   if(finalScore <= 33){colorScore = red;}
   else if(finalScore <= 66){colorScore = yellow;}
   else{colorScore = green;}
-  fout << yellow << " >>>> " << reset << " --- Final Score: " << colorScore << finalScore << reset << "\n";
+  cout << yellow << " >>>> " << reset << " --- Final Score: " << colorScore << finalScore << reset << "\n";
 }
 
-void lovercase(string &str){
-  for_each(str.begin(), str.end(), [](char &c){
-    c = ::tolower(c);
-  });
-}
 
 int main(int argc, char *argv[]){
-  queueId = argv[1];
-  string endSecq = "-eval.txt";
-  string outputFile = argv[1] + endSecq;
-  fout.open(outputFile.c_str());
   string progAll = "";
   if(string(argv[7]).compare("cpp") == 0 || string(argv[7]).compare("c++") == 0){
     progAll = "C++";
@@ -232,20 +217,16 @@ int main(int argc, char *argv[]){
   system("mkdir env/");
   globalTime = atoi(argv[5]);
   globalMem = atoi(argv[6]);
-  fout << blue << "[" << green << " OK " << blue << "]" << reset << " --- Starting " << reset << "OMIC EVALUATOR " << reset << "\n";
-  fout << yellow << " >>>> " << reset << " --- Queue Id : " << blue << argv[1] << reset << "\n";
-  fout << yellow << " >>>> " << reset << " --- User In Question : " << blue << argv[2] << reset << "\n";
-  fout << yellow << " >>>> " << reset << " --- Problem Name : " << blue << argv[4] << reset << "\n"; problemName = argv[4];
-  fout << yellow << " >>>> " << reset << " --- File Dimension : " << blue << getDimension(argv[3]) << reset << "\n";
-  fout << yellow << " >>>> " << reset << " --- Date Request Sent : " << blue << getTime() << reset;
-  fout << yellow << " >>>> " << reset << " --- Compiling " << argv[3] << " In " << progAll << "\n";
-  preposition = problemName;
-  lovercase(preposition);
-  //cout << preposition << "\n";
+  cout << blue << "[" << green << " OK " << blue << "]" << reset << " --- Starting " << reset << "OMIC EVALUATOR " << reset << "\n";
+  cout << yellow << " >>>> " << reset << " --- Queue Id : " << blue << argv[1] << reset << "\n";
+  cout << yellow << " >>>> " << reset << " --- User In Question : " << blue << argv[2] << reset << "\n";
+  cout << yellow << " >>>> " << reset << " --- Problem Name : " << blue << argv[4] << reset << "\n";
+  cout << yellow << " >>>> " << reset << " --- File Dimension : " << blue << getDimension(argv[3]) << reset << "\n";
+  cout << yellow << " >>>> " << reset << " --- Date Request Sent : " << blue << getTime() << reset;
+  cout << yellow << " >>>> " << reset << " --- Compiling " << argv[3] << " In " << progAll << "\n";
   compile(progAll, argv[3]);
   checkErrors();
-  checkTests(string(argv[8]) + "/" + problemName + "/");
+  checkTests(argv[8], argv[9]);
   system("rm -R env/ ; rm compile-output.txt");
-  fout.close();
   return 0;
 }
