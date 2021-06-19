@@ -11,7 +11,6 @@ THE FOLLOWING PROGRAMMING LANGUAGES AND COMPILE OPTIONS ARE:
     ! C      ! gcc -Wall -O2 -std=c11 ...   !
     ! C++    ! g++ -Wall -O2 -std=c++14 ... !
     ! PASCAL ! fpc -O2 -Xs ...              !
-    ! PYTHON ! python3 ...                  !
     ! RUST   ! rustc -O ...                 !
     +--------+------------------------------+
 USAGE:
