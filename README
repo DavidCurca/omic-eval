@@ -16,7 +16,7 @@ THE FOLLOWING PROGRAMMING LANGUAGES AND COMPILE OPTIONS ARE:
     ! RUST   ! rustc -O ...                 !
     +--------+------------------------------+
 USAGE:
-  omic-eval [option] [queue_d] [username] [problem-name] [time-limit] [memory-limit] [prog-lang] [env-dir] [tests-dir]
+  omic-eval [option] [queue_d] [username] [problem-name] [time-limit] [memory-limit] [prog-lang] [tests-dir]
   -[option]: -verbose: show debug messages
              -quiet: no logging to the console
              -help: shows documentation and manual
@@ -30,7 +30,6 @@ USAGE:
                  * c
                  * python / py
                  * rust
-  -[env-dir]: the directory where the program will run
   -[tests-dir]: the directory in which the tests are kept. 
                 NOTE: the path to the tests is [tests-dir]/[problem-name]
 EXAMPLE:
